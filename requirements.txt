@@ -1,0 +1,9 @@
+langchain
+langchain_huggingface
+langchain_groq
+langchain_chroma
+langchain_community
+os
+tempfile
+dotenv
+langchain_text_splitters
