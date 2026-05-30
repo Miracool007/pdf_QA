@@ -1,9 +1,9 @@
 langchain
-langchain_huggingface
-langchain_groq
-langchain_chroma
-langchain_community
+langchain-huggingface
+langchain-groq
+langchain-chroma
+langchain-community
 os
 tempfile
-dotenv
-langchain_text_splitters
+python-dotenv
+langchain-text-splitters
