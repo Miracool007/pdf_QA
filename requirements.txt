@@ -1,9 +1,11 @@
+streamlit
 langchain
 langchain-huggingface
 langchain-groq
 langchain-chroma
 langchain-community
-os
-tempfile
-python-dotenv
 langchain-text-splitters
+pypdf
+python-dotenv
+sentence-transformers
+chromadb
