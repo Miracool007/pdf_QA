@@ -1,8 +1,8 @@
 streamlit
-langchain
+langchain==0.3.26
+langchain-chroma==0.2.5
 langchain-huggingface
 langchain-groq
-langchain-chroma
 langchain-community
 langchain-text-splitters
 pypdf
