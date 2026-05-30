@@ -1,6 +1,7 @@
 streamlit
-langchain
+langchain==0.3.26
 langchain-chroma==0.2.5
+chromadb>=1.0.9
 langchain-community==0.3.26
 langchain-huggingface
 langchain-groq
@@ -8,3 +9,4 @@ langchain-text-splitters
 pypdf
 python-dotenv
 sentence-transformers
+protobuf>=4.25,<5
