@@ -8,4 +8,5 @@ langchain-text-splitters
 pypdf
 python-dotenv
 sentence-transformers
-chromadb
+chromadb>=0.4.0,<0.6.0
+protobuf>=4.25.0,<5.0.0
