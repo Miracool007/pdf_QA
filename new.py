@@ -18,16 +18,13 @@ if hf_token:
 
 groq_api_key = os.getenv("GROQ_API_KEY")
 
-# ── Model initialisation (cached so they load only once) ───────────────────────
+# ── Model initialisation ───────────────────────
 @st.cache_resource
 def load_embeddings():
-    # FIX: model_name (not model), and use the full sentence-transformers path
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 @st.cache_resource
 def load_llm():
-    # FIX: "openai/gpt-oss-120b" is not a valid Groq model ID.
-    # Use a real Groq-hosted model, e.g. llama-3.3-70b-versatile or gemma2-9b-it
     return ChatGroq(model="llama-3.3-70b-versatile", api_key=groq_api_key)
 
 embeddings = load_embeddings()
@@ -35,10 +32,10 @@ llm = load_llm()
 
 # ── Session-state bootstrap ────────────────────────────────────────────────────
 if "store" not in st.session_state:
-    st.session_state.store = {}          # session_id -> list[BaseMessage]
+    st.session_state.store = {}          
 
 if "vectorstore" not in st.session_state:
-    st.session_state.vectorstore = None  # FIX: cache so it isn't rebuilt on every rerun
+    st.session_state.vectorstore = None  
 
 if "processed_files" not in st.session_state:
     st.session_state.processed_files = set()
@@ -55,9 +52,8 @@ def build_vectorstore(files) -> Chroma:
 
     for uploaded_file in files:
         if uploaded_file.name in st.session_state.processed_files:
-            continue  # skip already-embedded files
+            continue  
 
-        # FIX: use a unique temp file per upload so multiple PDFs don't collide
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
             tmp.write(uploaded_file.getvalue())
             tmp_path = tmp.name
@@ -70,7 +66,7 @@ def build_vectorstore(files) -> Chroma:
             os.unlink(tmp_path)  # clean up temp file
 
     if not documents:
-        return st.session_state.vectorstore  # nothing new to embed
+        return st.session_state.vectorstore  
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
     splits = text_splitter.split_documents(documents)
@@ -80,7 +76,6 @@ def build_vectorstore(files) -> Chroma:
             documents=splits, embedding=embeddings
         )
     else:
-        # Add new chunks to the existing store rather than rebuilding
         st.session_state.vectorstore.add_documents(splits)
 
     return st.session_state.vectorstore
@@ -113,12 +108,10 @@ def get_response(query: str, memory: list, vectorstore: Chroma) -> str:
         f"User: {query}\nAI:"
     )
 
-    # FIX: append the user message to memory BEFORE calling the LLM
     memory.append(HumanMessage(content=query))
 
     response = llm.invoke([HumanMessage(content=full_prompt)])
 
-    # FIX: append AI reply to memory so future turns include it
     memory.append(AIMessage(content=response.content))
 
     return response.content
@@ -134,7 +127,6 @@ st.markdown(
     """
 )
 
-# FIX: corrected the typo (seesion_id → session_id)
 session_id = st.text_input("Session ID", value="default_session")
 
 uploaded_files = st.file_uploader(
@@ -151,14 +143,12 @@ if uploaded_files:
             + ", ".join(st.session_state.processed_files)
         )
 
-        # Display existing chat history for this session
         memory = get_memory(session_id)
         for msg in memory:
             role = "user" if isinstance(msg, HumanMessage) else "assistant"
             with st.chat_message(role):
                 st.write(msg.content)
 
-        # Chat input
         query = st.chat_input("Ask a question about your documents…")
         if query:
             with st.chat_message("user"):
