@@ -11,14 +11,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ── Environment ────────────────────────────────────────────────────────────────
 hf_token = os.getenv("HF_TOKEN")
 if hf_token:
     os.environ["HF_TOKEN"] = hf_token
 
 groq_api_key = os.getenv("GROQ_API_KEY")
 
-# ── Model initialisation ───────────────────────
 @st.cache_resource
 def load_embeddings():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -30,7 +28,6 @@ def load_llm():
 embeddings = load_embeddings()
 llm = load_llm()
 
-# ── Session-state bootstrap ────────────────────────────────────────────────────
 if "store" not in st.session_state:
     st.session_state.store = {}          
 
@@ -40,13 +37,11 @@ if "vectorstore" not in st.session_state:
 if "processed_files" not in st.session_state:
     st.session_state.processed_files = set()
 
-# ── Helper: memory per session ─────────────────────────────────────────────────
 def get_memory(session_id: str) -> list:
     if session_id not in st.session_state.store:
         st.session_state.store[session_id] = []
     return st.session_state.store[session_id]
 
-# ── Helper: build / update vectorstore ────────────────────────────────────────
 def build_vectorstore(files) -> Chroma:
     documents = []
 
@@ -80,7 +75,6 @@ def build_vectorstore(files) -> Chroma:
 
     return st.session_state.vectorstore
 
-# ── Helper: RAG response ───────────────────────────────────────────────────────
 def get_response(query: str, memory: list, vectorstore: Chroma) -> str:
     retriever = vectorstore.as_retriever(
         search_type="similarity",
